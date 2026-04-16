@@ -14,6 +14,7 @@ export interface LogoConfig {
   secondaryColor: string;
   textColor: string;
   fontId: string;
+  fontWeight: number;
   layoutId: string;
   iconSize: number;
   fontSize: number;
@@ -40,6 +41,7 @@ const defaultConfig: LogoConfig = {
   secondaryColor: '#748ffc',
   textColor: '#1a1a2e',
   fontId: 'montserrat',
+  fontWeight: 700,
   layoutId: 'icon-top',
   iconSize: 48,
   fontSize: 28,
@@ -465,19 +467,53 @@ const LogoWizard: React.FC<LogoWizardProps> = ({ onBack }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Font</label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Font Family</label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-[400px] overflow-y-auto pr-2">
                     {fontOptions.map((font) => (
                       <button
                         key={font.id}
                         onClick={() => updateConfig({ fontId: font.id })}
-                        className={`px-4 py-3 rounded-xl border-2 text-left transition-all ${
+                        className={`px-4 py-4 rounded-xl border-2 text-left transition-all ${
                           config.fontId === font.id
-                            ? 'border-brand-500 bg-brand-50'
+                            ? 'border-brand-500 bg-brand-50 shadow-md'
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
                       >
-                        <span className="text-sm" style={{ fontFamily: font.family }}>{font.name}</span>
+                        <span className="text-xs text-gray-500 block mb-1">{font.name}</span>
+                        <span 
+                          className="text-base" 
+                          style={{ fontFamily: font.family }}
+                        >
+                          {config.businessName || 'Sample'}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Font Weight</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      { id: 'light', value: 300, label: 'Light' },
+                      { id: 'regular', value: 400, label: 'Regular' },
+                      { id: 'medium', value: 500, label: 'Medium' },
+                      { id: 'semibold', value: 600, label: 'SemiBold' },
+                      { id: 'bold', value: 700, label: 'Bold' },
+                      { id: 'extrabold', value: 800, label: 'ExtraBold' },
+                      { id: 'black', value: 900, label: 'Black' },
+                    ].map((weight) => (
+                      <button
+                        key={weight.id}
+                        onClick={() => updateConfig({ fontWeight: weight.value })}
+                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                          config.fontWeight === weight.value
+                            ? 'border-brand-500 bg-brand-50 text-brand-700'
+                            : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                        }`}
+                        style={{ fontWeight: weight.value }}
+                      >
+                        {weight.label}
                       </button>
                     ))}
                   </div>
@@ -857,7 +893,7 @@ const LogoPreview: React.FC<{ config: LogoConfig; size: 'small' | 'large' }> = (
       <div
         style={{
           fontSize: `${config.fontSize * scale}px`,
-          fontWeight: 700,
+          fontWeight: config.fontWeight,
           color: config.textColor,
           letterSpacing: `${config.letterSpacing * scale}px`,
           lineHeight: 1.2,
@@ -871,7 +907,7 @@ const LogoPreview: React.FC<{ config: LogoConfig; size: 'small' | 'large' }> = (
             fontSize: `${config.taglineSize * scale}px`,
             color: config.secondaryColor,
             marginTop: `${4 * scale}px`,
-            fontWeight: 400,
+            fontWeight: Math.max(300, config.fontWeight - 300),
           }}
         >
           {config.tagline}
